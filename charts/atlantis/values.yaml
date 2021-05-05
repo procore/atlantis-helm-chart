@@ -112,6 +112,13 @@ image:
 #      apply:
 #        steps: [apply]
 
+# We are handling approvals at the Github level. Only verifying the PR is mergable.
+repoConfig: |
+ ---
+ repos:
+ - id: /.*/
+   apply_requirements: [mergable]
+
 # allowForkPRs enables atlantis to run on a fork Pull Requests
 allowForkPRs: false
 
