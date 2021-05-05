@@ -112,7 +112,7 @@ image:
 #      apply:
 #        steps: [apply]
 
-# We are handling approvals at the Github level. Only verifying the PR is mergable.
+# We are handling approvals in Github. Only verify the PR is mergable on all repos.
 repoConfig: |
  ---
  repos:
