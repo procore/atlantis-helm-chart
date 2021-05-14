@@ -21,6 +21,14 @@ image:
 imagePullSecrets:
   - procoredevops-procore-sherpa-pull-secret
 
+resources:
+  requests:
+    memory: 1Gi
+    cpu: 1
+  limits:
+    memory: 1Gi
+    cpu: 1
+
 ## ---- BEGIN TEMPORARY SETUP CREDS SECTION ----
 ## Uncomment the following section for initial setup of the GitHub App.
 ## https://www.runatlantis.io/docs/access-credentials.html#generating-an-access-token
