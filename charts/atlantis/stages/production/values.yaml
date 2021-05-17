@@ -43,13 +43,13 @@ repoConfig: |
          name: TFBIN
          command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
        - run: $TFBIN init -input=false -no-color
-       - run: $TFBIN plan -input=false -refresh -no-color -out $PLANFILE | tfmask
+       - run: $TFBIN plan -input=false -refresh -no-color -out $PLANFILE | /usr/bin/tfmask
      apply:
        steps:
        - env:
          name: TFBIN
          command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
-       - run: $TFBIN apply -no-color $PLANFILE | tfmask
+       - run: $TFBIN apply -no-color $PLANFILE | /usr/bin/tfmask
 
 
 
