@@ -29,6 +29,25 @@ resources:
     memory: 2Gi
     cpu: 1
 
+repoConfig: |
+ ---
+ repos:
+ - id: /.*/
+   workflow: workflow
+   apply_requirements: [approved, mergeable]
+ workflows:
+   workflow:
+     plan:
+       steps:
+         - init:
+             extra_args: ["| tfmask"]
+         - plan:
+             extra_args: ["| tfmask"]
+     apply:
+       steps:
+       - apply:
+           extra_args: ["| tfmask"]
+
 ## ---- BEGIN TEMPORARY SETUP CREDS SECTION ----
 ## Uncomment the following section for initial setup of the GitHub App.
 ## https://www.runatlantis.io/docs/access-credentials.html#generating-an-access-token
