@@ -39,11 +39,17 @@ repoConfig: |
    workflow:
      plan:
        steps:
-       - run: 'terraform${ATLANTIS_TERRAFORM_VERSION} init -input=false -no-color'
-       - run: 'terraform${ATLANTIS_TERRAFORM_VERSION} plan -input=false -refresh -no-color -out $PLANFILE | tfmask'
+       - env:
+         name: TFBIN
+         command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
+       - run: $TFBIN init -input=false -no-color
+       - run: $TFBIN plan -input=false -refresh -no-color -out $PLANFILE | tfmask
      apply:
        steps:
-       - run: 'terraform${ATLANTIS_TERRAFORM_VERSION} apply -no-color $PLANFILE | tfmask'
+       - env:
+         name: TFBIN
+         command: 'echo "terraform${ATLANTIS_TERRAFORM_VERSION}"'
+       - run: $TFBIN apply -no-color $PLANFILE | tfmask
 
 
 
