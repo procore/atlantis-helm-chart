@@ -39,14 +39,11 @@ repoConfig: |
    workflow:
      plan:
        steps:
-         - init:
-             extra_args: ["| tfmask"]
-         - plan:
-             extra_args: ["| tfmask"]
+       - run: terraform init -input=false -no-color
+       - run: terraform plan -input=false -refresh -no-color -out $PLANFILE | tfmask
      apply:
        steps:
-       - apply:
-           extra_args: ["| tfmask"]
+       - run: terraform apply -no-color $PLANFILE | tfmask
 
 ## ---- BEGIN TEMPORARY SETUP CREDS SECTION ----
 ## Uncomment the following section for initial setup of the GitHub App.
