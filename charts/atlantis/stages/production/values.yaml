@@ -46,7 +46,7 @@ repoConfig: |
        - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} apply -no-color $PLANFILE | tfmask
      justtesting:
        steps:
-       - run: $ATLANTIS_TERRAFORM_VERSION | whoami
+       - run: ${ATLANTIS_TERRAFORM_VERSION} | whoami
 
 
 
