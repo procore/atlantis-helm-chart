@@ -123,14 +123,11 @@ repoConfig: |
    workflow:
      plan:
        steps:
-         - init:
-             extra_args: ["| tfmask"]
-         - plan:
-             extra_args: ["| tfmask"]
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} init -input=false -no-color
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} plan -input=false -refresh -no-color -out $PLANFILE | tfmask
      apply:
        steps:
-       - apply:
-           extra_args: ["| tfmask"]
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} apply -no-color $PLANFILE | tfmask
 # allowForkPRs enables atlantis to run on a fork Pull Requests
 allowForkPRs: false
 
