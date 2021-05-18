@@ -164,9 +164,13 @@ readinessProbe:
   failureThreshold: 5
   scheme: HTTP
 
+# use LoadBalancer for service and allow GitHub webhook IPs through.
 service:
-  type: NodePort
-  port: 80
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+    - "192.30.252.0/22"
+    - "185.199.108.0/22"
+    - "140.82.112.0/20"
 
 podTemplate:
   annotations: {}

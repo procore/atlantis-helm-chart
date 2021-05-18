@@ -3,13 +3,6 @@
 ingress:
   enabled: false
 
-service:
-  type: LoadBalancer
-  loadBalancerSourceRanges:
-    - "192.30.252.0/22"
-    - "185.199.108.0/22"
-    - "140.82.112.0/20"
-
 serviceAccount:
   name: atlantis
   annotations:
