@@ -44,9 +44,9 @@ repoConfig: |
    workflow:
      plan:
        steps:
-       - run: 'terraform${"${ATLANTIS_TERRAFORM_VERSION}"} init -input=false -no-color'
-       - run: 'terraform${"${ATLANTIS_TERRAFORM_VERSION}"} plan -input=false -refresh -no-color -out ${"${PLANFILE}"} | tfmask'
+       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION init -input=false -no-color'
+       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask'
      apply:
        steps:
-       - run: 'terraform${"${ATLANTIS_TERRAFORM_VERSION}"} apply -no-color ${"${PLANFILE}"} | tfmask'
+       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask'
 
