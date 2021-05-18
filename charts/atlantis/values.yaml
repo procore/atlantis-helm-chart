@@ -309,3 +309,7 @@ initContainers: []
 # - name: example
 #   image: alpine:latest
 #   command: ['sh', '-c', 'echo The init container is running! && sleep 10']
+
+# environment variables to set
+environment:
+  ATLANTIS_GH_ORG: procore

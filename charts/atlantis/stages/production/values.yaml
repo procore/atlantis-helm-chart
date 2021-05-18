@@ -21,20 +21,6 @@ image:
 imagePullSecrets:
   - procoredevops-procore-sherpa-pull-secret
 
-## ---- BEGIN TEMPORARY SETUP CREDS SECTION ----
-## Uncomment the following section for initial setup of the GitHub App.
-## https://www.runatlantis.io/docs/access-credentials.html#generating-an-access-token
-## Comment it again after you've registered the app with GitHub and are ready to install the secrets.
-# github:
-#   user: fake
-#   token: fake
-
-# environment:
-#   ATLANTIS_ATLANTIS_URL: http://atlantis.production.procoretech.com/
-#   ATLANTIS_GH_ORG: procore
-## ---- END TEMPORARY SETUP CREDS SECTION ----
-
-
 ## ---- BEGIN PERMANENT SETUP CREDS SECTION ----
 ## Uncomment this section after the initial setup of the GitHub App.
 ## Configure the secrets you got when installing the app.
@@ -52,7 +38,6 @@ environment:
   ATLANTIS_WRITE_GIT_CREDS: true
   ATLANTIS_ATLANTIS_URL: http://atlantis.production.procoretech.com/
   ATLANTIS_LOG_LEVEL: debug
-  ATLANTIS_GH_ORG: procore
   ATLANTIS_SILENCE_ALLOWLIST_ERRORS: true
   AWS_DEFAULT_REGION: us-east-1
 
