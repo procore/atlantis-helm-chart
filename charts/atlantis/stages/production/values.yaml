@@ -34,19 +34,4 @@ extraVolumeMounts:
   - mountPath: /atlantis_keys/
     name: gh-app-key-file
 
-repoConfig: |
- ---
- repos:
- - id: /.*/
-   workflow: workflow
-   apply_requirements: [approved]
- workflows:
-   workflow:
-     plan:
-       steps:
-       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION init -input=false -no-color'
-       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask'
-     apply:
-       steps:
-       - run: 'terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask'
 
