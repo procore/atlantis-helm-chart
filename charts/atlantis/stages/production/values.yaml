@@ -8,14 +8,6 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::749942219478:role/atlantis-ops-role
 
-image:
-  repository: quay.io/procoredevops/atlantis-helm-chart
-  tag: procore-atlantis-v0.17.0-0.0.2
-  pullPolicy: IfNotPresent
-
-imagePullSecrets:
-  - procoredevops-procore-sherpa-pull-secret
-
 ## ---- BEGIN PERMANENT SETUP CREDS SECTION ----
 ## Uncomment this section after the initial setup of the GitHub App.
 ## Configure the secrets you got when installing the app.

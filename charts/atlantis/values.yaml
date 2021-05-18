@@ -82,17 +82,18 @@ serviceAccountSecrets:
 # Default values for atlantis (override as needed).
 ## -------------------------- ##
 
+# use the Procore custom Atlantis docker image
 image:
-  repository: runatlantis/atlantis
-  tag: v0.16.1
+  repository: quay.io/procoredevops/atlantis-helm-chart
+  tag: procore-atlantis-v0.17.0-0.0.2
   pullPolicy: IfNotPresent
 
 ## Optionally specify an array of imagePullSecrets.
 ## Secrets must be manually created in the namespace.
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 ##
-# imagePullSecrets:
-# - myRegistryKeySecretName
+imagePullSecrets:
+  - procoredevops-procore-sherpa-pull-secret
 
 ## Use Server Side Repo Config,
 ## ref: https://www.runatlantis.io/docs/server-side-repo-config.html
