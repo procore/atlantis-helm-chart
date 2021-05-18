@@ -21,6 +21,30 @@ image:
 imagePullSecrets:
   - procoredevops-procore-sherpa-pull-secret
 
+resources:
+  requests:
+    memory: 2Gi
+    cpu: 1
+  limits:
+    memory: 2Gi
+    cpu: 1
+
+repoConfig: |
+ ---
+ repos:
+ - id: /.*/
+   workflow: workflow
+   apply_requirements: [approved]
+ workflows:
+   workflow:
+     plan:
+       steps:
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} init -input=false -no-color
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} plan -input=false -refresh -no-color -out $PLANFILE | tfmask
+     apply:
+       steps:
+       - run: terraform${"${ATLANTIS_TERRAFORM_VERSION}"} apply -no-color $PLANFILE | tfmask
+
 ## ---- BEGIN TEMPORARY SETUP CREDS SECTION ----
 ## Uncomment the following section for initial setup of the GitHub App.
 ## https://www.runatlantis.io/docs/access-credentials.html#generating-an-access-token
