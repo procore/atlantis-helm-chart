@@ -313,3 +313,4 @@ initContainers: []
 # environment variables to set
 environment:
   ATLANTIS_GH_ORG: procore
+  AWS_DEFAULT_REGION: us-east-1
