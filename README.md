@@ -124,6 +124,7 @@ Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 Run the tests after any changes to the python code.
 
 ```
-pip3 install -f requirements.txt
+cd procore_terraform_wrapper
+pip3 install -r requirements.txt
 pytest ./test/ -vvv
 ```
