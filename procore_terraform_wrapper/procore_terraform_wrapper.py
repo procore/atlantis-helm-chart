@@ -20,7 +20,7 @@ def run_os_command(args: List[str], input: str = "") -> subprocess.CompletedProc
     :return: CompletedProcess instance
     """
     logger.info('Running command: %s', " ".join(args))
-    completed_process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, input=input)
+    completed_process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, input=input)
     logger.info(f'Command completed. returncode={completed_process.returncode}')
     logger.debug(completed_process)
     return completed_process
