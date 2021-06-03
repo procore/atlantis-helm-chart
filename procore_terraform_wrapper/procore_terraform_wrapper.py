@@ -27,6 +27,11 @@ def run_os_command(args: List[str], input: str = "") -> subprocess.CompletedProc
 
 
 def reduce_init(input: str) -> str:
+    """
+    Removes unnecessary parts of the output of `terraform init`. This removes the messages related to downloading modules.
+    :param input: The output from `terraform init`
+    :return: The shortened `terraform init` output.
+    """
     match = re.search(r"(.*?Initializing modules\.\.\.\n).+?(Initializing the backend\.\.\..+$)", input, re.DOTALL)
     if(match):
         input = match.expand(r"\1 Module downloads removed for brevity\n\2")
@@ -36,6 +41,11 @@ def reduce_init(input: str) -> str:
 
 
 def reduce_plan(input: str) -> str:
+    """
+    Removes unnecessary parts of the output of `terraform plan`. This removes the messages related to the state refresh.
+    :param input: The output from `terraform plan`
+    :return: The shortened `terraform plan` output.
+    """
     match = re.search(r"(.+?persisted to local or remote state storage\.\n).+?(---------.+$)", input, re.DOTALL)
     if(match):
         input = match.expand(r"\1 State refresh removed for brevity\n\2")
@@ -45,6 +55,11 @@ def reduce_plan(input: str) -> str:
 
 
 def terraform_init(atlantis_terraform_executable: str) -> subprocess.CompletedProcess:
+    """
+    Runs `terraform init`. Will shorten the output if the command succeeds.
+    :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :return: The CompletedProcess instance from running terraform.
+    """
     # terraform$ATLANTIS_TERRAFORM_VERSION init -input=false -no-color
     logger.info('Running terraform init...')
     tf_completed_process = run_os_command([atlantis_terraform_executable, 'init', '-input=false', '-no-color'])
@@ -55,6 +70,11 @@ def terraform_init(atlantis_terraform_executable: str) -> subprocess.CompletedPr
 
 
 def terraform_plan(atlantis_terraform_executable: str, planfile: str) -> subprocess.CompletedProcess:
+    """
+    Runs `terraform plan`. Will shorten the output if the command succeeds.
+    :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :return: The CompletedProcess instance from running terraform.
+    """
     # terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask
     logger.info('Running terraform plan...')
     tf_completed_process = run_os_command([atlantis_terraform_executable, 'plan', '-input=false', '-refresh', '-no-color', '-out', planfile])
@@ -65,6 +85,11 @@ def terraform_plan(atlantis_terraform_executable: str, planfile: str) -> subproc
 
 
 def terraform_apply(atlantis_terraform_executable: str, planfile: str) -> subprocess.CompletedProcess:
+    """
+    Runs `terraform apply`.
+    :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :return: The CompletedProcess instance from running terraform.
+    """
     # terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask
     logger.info('Running terraform apply...')
     return run_os_command([atlantis_terraform_executable, 'apply', '-no-color', planfile])
