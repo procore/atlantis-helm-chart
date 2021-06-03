@@ -44,6 +44,82 @@ optional arguments:
                         The Terraform command to perform.
 ```
 
+For Atlantis usage, we will call this script as part of a custom workflow. See the `repoConfig` setting in the `values.yaml` file for the chart in this repo.
+
+When running the script locally, just use it in place of the terraform command. You will need to install `tfmask` and have that available on your path before the script will work. See the `Dockerfile` in this repo for how to install `tfmask`.
+
+For example, you might run this series of commands from within a terraform project directory (e.g. terraform-infra/us00/staging/security_kubernetes_cluster/):
+```
+aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action init
+aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action plan
+aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action apply
+```
+
+Here's some example output from local usage with a development cluster in terraform-infra:
+```
+tommckay@MACLAP-4ZYMD6R kubernetes_cluster % pwd
+/Users/tommckay/Source/procore/terraform-infra/us00/staging/dev/kubernetes_cluster
+tommckay@MACLAP-4ZYMD6R kubernetes_cluster % aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action init
+2021-06-03 11:58:22,038:INFO:Running terraform init...
+2021-06-03 11:58:22,038:INFO:Running command: terraform init -input=false -no-color
+2021-06-03 11:59:45,960:INFO:Command completed. returncode=0
+2021-06-03 11:59:45,961:INFO:Running command: tfmask
+2021-06-03 11:59:46,030:INFO:Command completed. returncode=0
+Initializing modules...
+ Module downloads removed for brevity
+Initializing the backend...
+
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.
+
+Initializing provider plugins...
+- Finding hashicorp/random versions matching ">= 2.1.*"...
+(...snip other provider plugins...)
+
+(...snip lots of output from terraform)
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+
+tommckay@MACLAP-4ZYMD6R kubernetes_cluster % aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action plan
+2021-06-03 12:00:15,943:INFO:Running terraform plan...
+2021-06-03 12:00:15,943:INFO:Running command: terraform plan -input=false -refresh -no-color -out plan.tfplan
+2021-06-03 12:01:10,991:INFO:Command completed. returncode=0
+2021-06-03 12:01:10,992:INFO:Running command: tfmask
+2021-06-03 12:01:10,997:INFO:Command completed. returncode=0
+Refreshing Terraform state in-memory prior to plan...
+The refreshed state will be used to calculate this plan, but will not be
+persisted to local or remote state storage.
+ State refresh removed for brevity
+------------------------------------------------------------------------
+
+No changes. Infrastructure is up-to-date.
+
+This means that Terraform did not detect any differences between your
+configuration and real physical resources that exist. As a result, no
+actions need to be performed.
+
+
+tommckay@MACLAP-4ZYMD6R kubernetes_cluster % aws-okta exec prnd_staging -- procore_terraform_wrapper.py --action apply
+2021-06-03 12:01:55,915:INFO:Running terraform apply...
+2021-06-03 12:01:55,915:INFO:Running command: terraform apply -no-color plan.tfplan
+2021-06-03 12:02:08,397:INFO:Command completed. returncode=0
+2021-06-03 12:02:08,397:INFO:Running command: tfmask
+2021-06-03 12:02:08,403:INFO:Command completed. returncode=0
+
+(...snip lots of output from terraform apply...)
+
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+```
+
 ## Running tests
 Run the tests after any changes to the python code.
 
