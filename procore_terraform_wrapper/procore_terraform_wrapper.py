@@ -54,45 +54,48 @@ def reduce_plan(input: str) -> str:
     return input
 
 
-def terraform_init(atlantis_terraform_executable: str) -> subprocess.CompletedProcess:
+def terraform_init(atlantis_terraform_executable: str, comment_args_list: List[str]) -> subprocess.CompletedProcess:
     """
     Runs `terraform init`. Will shorten the output if the command succeeds.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :param comment_args_list: List of extra args to supply to terraform command
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION init -input=false -no-color
     logger.info('Running terraform init...')
-    tf_completed_process = run_os_command([atlantis_terraform_executable, 'init', '-input=false', '-no-color'])
+    tf_completed_process = run_os_command([atlantis_terraform_executable, 'init', '-input=false', '-no-color', *comment_args_list])
     # if terraform succeeded, run the reduce function to strip unnecessary output.
     if(tf_completed_process.returncode == 0):
         tf_completed_process.stdout = reduce_init(tf_completed_process.stdout)
     return tf_completed_process
 
 
-def terraform_plan(atlantis_terraform_executable: str, planfile: str) -> subprocess.CompletedProcess:
+def terraform_plan(atlantis_terraform_executable: str, comment_args_list: List[str], planfile: str) -> subprocess.CompletedProcess:
     """
     Runs `terraform plan`. Will shorten the output if the command succeeds.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :param comment_args_list: List of extra args to supply to terraform command
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask
     logger.info('Running terraform plan...')
-    tf_completed_process = run_os_command([atlantis_terraform_executable, 'plan', '-input=false', '-refresh', '-no-color', '-out', planfile])
+    tf_completed_process = run_os_command([atlantis_terraform_executable, 'plan', '-input=false', '-refresh', '-no-color', '-out', planfile, *comment_args_list])
     # if terraform succeeded, run the reduce function to strip unnecessary output.
     if(tf_completed_process.returncode == 0):
         tf_completed_process.stdout = reduce_plan(tf_completed_process.stdout)
     return tf_completed_process
 
 
-def terraform_apply(atlantis_terraform_executable: str, planfile: str) -> subprocess.CompletedProcess:
+def terraform_apply(atlantis_terraform_executable: str, comment_args_list: List[str], planfile: str) -> subprocess.CompletedProcess:
     """
     Runs `terraform apply`.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
+    :param comment_args_list: List of extra args to supply to terraform command
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask
     logger.info('Running terraform apply...')
-    return run_os_command([atlantis_terraform_executable, 'apply', '-no-color', planfile])
+    return run_os_command([atlantis_terraform_executable, 'apply', '-no-color', *comment_args_list, planfile])
 
 
 def main_cli() -> int:
@@ -108,14 +111,16 @@ def main_cli() -> int:
     atlantis_terraform_version = os.environ.get('ATLANTIS_TERRAFORM_VERSION', '')
     atlantis_terraform_executable = f'terraform{atlantis_terraform_version}'
     planfile = os.environ.get('PLANFILE', 'plan.tfplan')
+    comment_args = os.environ.get('COMMENT_ARGS', '')
+    comment_args_list = comment_args.split(',')
 
     # run the right function based on args
     if(args.action == 'init'):
-        tf_completed_process = terraform_init(atlantis_terraform_executable)
+        tf_completed_process = terraform_init(atlantis_terraform_executable, comment_args_list)
     elif(args.action == 'plan'):
-        tf_completed_process = terraform_plan(atlantis_terraform_executable, planfile)
+        tf_completed_process = terraform_plan(atlantis_terraform_executable, comment_args_list, planfile)
     elif(args.action == 'apply'):
-        tf_completed_process = terraform_apply(atlantis_terraform_executable, planfile)
+        tf_completed_process = terraform_apply(atlantis_terraform_executable, comment_args_list, planfile)
 
     # run tfmask, piping the terraform_output to it
     tfmask_completed_process = run_os_command(['tfmask'], input=tf_completed_process.stdout)
