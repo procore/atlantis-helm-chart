@@ -8,7 +8,7 @@ import re
 import sys
 
 # setup logging
-logging.basicConfig(level='INFO', format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(level='DEBUG', format='%(asctime)s:%(levelname)s:%(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -108,6 +108,7 @@ def main_cli() -> int:
     args = parser.parse_args()
 
     # grab Atlantis environment variables
+    logger.debug(os.environ)
     atlantis_terraform_version = os.environ.get('ATLANTIS_TERRAFORM_VERSION', '')
     atlantis_terraform_executable = f'terraform{atlantis_terraform_version}'
     planfile = os.environ.get('PLANFILE', 'plan.tfplan')

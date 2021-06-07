@@ -3,6 +3,9 @@
 
 logLevel: "debug"
 
+image:
+  tag: procore-atlantis-v0.17.0-0.0.3-rc1
+
 orgWhitelist: github.com/procore/atlantis-test-repository
 
 serviceAccount:
