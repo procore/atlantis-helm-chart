@@ -6,6 +6,22 @@ logLevel: "debug"
 image:
   tag: procore-atlantis-v0.17.0-0.0.3-rc1
 
+repoConfig: |
+ ---
+ repos:
+ - id: /.*/
+   workflow: workflow
+   apply_requirements: [approved]
+ workflows:
+   workflow:
+     plan:
+       steps:
+       - run: 'procore_terraform_wrapper.py --action init --tf-version=$ATLANTIS_TERRAFORM_VERSION'
+       - run: 'procore_terraform_wrapper.py --action plan --tf-version=$ATLANTIS_TERRAFORM_VERSION --planfile=$PLANFILE --comment-args=$COMMENT_ARGS'
+     apply:
+       steps:
+       - run: 'procore_terraform_wrapper.py --action apply --tf-version=$ATLANTIS_TERRAFORM_VERSION --planfile=$PLANFILE --comment-args=$COMMENT_ARGS'
+
 orgWhitelist: github.com/procore/atlantis-test-repository
 
 serviceAccount:

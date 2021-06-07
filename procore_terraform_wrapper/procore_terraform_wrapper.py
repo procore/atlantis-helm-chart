@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
-from typing import List
 import logging
 import subprocess
 import argparse
-import os
 import re
 import sys
+import shlex
 
 # setup logging
-logging.basicConfig(level='DEBUG', format='%(asctime)s:%(levelname)s:%(message)s')
 logger = logging.getLogger(__name__)
 
 
-def run_os_command(args: List[str], input: str = "") -> subprocess.CompletedProcess:
+def run_os_command(args: str, input: str = "") -> subprocess.CompletedProcess:
     """
     Runs and logs OS commands.
-    :param args: The list of command arguments to pass to subprocess
+    :param args: The command to pass to subprocess
     :param input: An optional string to supply as input to the command.
     :return: CompletedProcess instance
     """
-    logger.info('Running command: %s', " ".join(args))
-    completed_process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, input=input)
+    logger.info(f'Running command: {args}')
+    completed_process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, input=input, shell=True)
     logger.info(f'Command completed. returncode={completed_process.returncode}')
     logger.debug(completed_process)
     return completed_process
@@ -54,48 +52,61 @@ def reduce_plan(input: str) -> str:
     return input
 
 
-def terraform_init(atlantis_terraform_executable: str, comment_args_list: List[str]) -> subprocess.CompletedProcess:
+def terraform_init(atlantis_terraform_executable: str, comment_args: str) -> subprocess.CompletedProcess:
     """
     Runs `terraform init`. Will shorten the output if the command succeeds.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
-    :param comment_args_list: List of extra args to supply to terraform command
+    :param comment_args: Extra args to supply to terraform command
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION init -input=false -no-color
     logger.info('Running terraform init...')
-    tf_completed_process = run_os_command([atlantis_terraform_executable, 'init', '-input=false', '-no-color', *comment_args_list])
+    tf_completed_process = run_os_command(f'{atlantis_terraform_executable} init -input=false -no-color {comment_args}')
     # if terraform succeeded, run the reduce function to strip unnecessary output.
     if(tf_completed_process.returncode == 0):
         tf_completed_process.stdout = reduce_init(tf_completed_process.stdout)
     return tf_completed_process
 
 
-def terraform_plan(atlantis_terraform_executable: str, comment_args_list: List[str], planfile: str) -> subprocess.CompletedProcess:
+def terraform_plan(atlantis_terraform_executable: str, comment_args: str, planfile: str) -> subprocess.CompletedProcess:
     """
     Runs `terraform plan`. Will shorten the output if the command succeeds.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
-    :param comment_args_list: List of extra args to supply to terraform command
+    :param comment_args: extra args to supply to terraform command
+    :param planfile: Path to planfile to write to.
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask
     logger.info('Running terraform plan...')
-    tf_completed_process = run_os_command([atlantis_terraform_executable, 'plan', '-input=false', '-refresh', '-no-color', '-out', planfile, *comment_args_list])
+    tf_completed_process = run_os_command(f'{atlantis_terraform_executable} plan -input=false -refresh -no-color -out {planfile} {comment_args}')
     # if terraform succeeded, run the reduce function to strip unnecessary output.
     if(tf_completed_process.returncode == 0):
         tf_completed_process.stdout = reduce_plan(tf_completed_process.stdout)
     return tf_completed_process
 
 
-def terraform_apply(atlantis_terraform_executable: str, comment_args_list: List[str], planfile: str) -> subprocess.CompletedProcess:
+def terraform_apply(atlantis_terraform_executable: str, comment_args: str, planfile: str) -> subprocess.CompletedProcess:
     """
     Runs `terraform apply`.
     :param atlantis_terraform_executable: The name of the terraform executable to use. (e.g. terraform0.13.6 or terraform)
-    :param comment_args_list: List of extra args to supply to terraform command
+    :param comment_args: Extra args to supply to terraform command
+    :param planfile: Path to planfile to apply.
     :return: The CompletedProcess instance from running terraform.
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask
     logger.info('Running terraform apply...')
-    return run_os_command([atlantis_terraform_executable, 'apply', '-no-color', *comment_args_list, planfile])
+    return run_os_command(f'{atlantis_terraform_executable} apply -no-color {comment_args} {planfile}')
+
+
+def quote_argument(input: str) -> str:
+    """
+    Quotes a command line argument using shlex
+    :param input: Raw input from command line
+    :return: Quoted command line argument.
+    """
+    if(input):
+        input = shlex.quote(input)
+    return input
 
 
 def main_cli() -> int:
@@ -105,26 +116,35 @@ def main_cli() -> int:
     # parse arguments
     parser = argparse.ArgumentParser(description='Wraps calls to terraform and tfmask. For use with Atlantis.')
     parser.add_argument('--action', choices=['init', 'plan', 'apply'], type=str, required=True, help='The Terraform command to perform.')
+    parser.add_argument('--tf-version', type=str, default='', help='Optional. The terraform version to use. Pass $ATLANTIS_TERRAFORM_VERSION to this.')
+    parser.add_argument('--planfile', type=str, default='default.tfplan', help='Optional. Path to the planfile to use. Pass $PLANFILE to this.')
+    parser.add_argument('--comment-args', type=str, default='', help='Optional. Extra args for terraform command. Pass $COMMENT_ARGS to this.')
+    parser.add_argument('--debug', action='store_true', help='Optional. Increase log level to debug.')
     args = parser.parse_args()
 
-    # grab Atlantis environment variables
-    logger.debug(os.environ)
-    atlantis_terraform_version = os.environ.get('ATLANTIS_TERRAFORM_VERSION', '')
-    atlantis_terraform_executable = f'terraform{atlantis_terraform_version}'
-    planfile = os.environ.get('PLANFILE', 'plan.tfplan')
-    comment_args = os.environ.get('COMMENT_ARGS', '')
-    comment_args_list = comment_args.split(',')
+    # setup logging
+    log_level = 'DEBUG' if args.debug else 'INFO'
+    logging.basicConfig(level=log_level, format='%(asctime)s:%(levelname)s:%(message)s')
+
+    # build commands from args
+    atlantis_terraform_executable = f'terraform{quote_argument(args.tf_version)}'
+    planfile = quote_argument(args.planfile)
+    comment_args = ''
+    if(args.comment_args):
+        comment_args = quote_argument(args.comment_args)
+        comment_args_split = comment_args.split(',')
+        comment_args = ' '.join(comment_args_split)
 
     # run the right function based on args
     if(args.action == 'init'):
-        tf_completed_process = terraform_init(atlantis_terraform_executable, comment_args_list)
+        tf_completed_process = terraform_init(atlantis_terraform_executable, comment_args)
     elif(args.action == 'plan'):
-        tf_completed_process = terraform_plan(atlantis_terraform_executable, comment_args_list, planfile)
+        tf_completed_process = terraform_plan(atlantis_terraform_executable, comment_args, planfile)
     elif(args.action == 'apply'):
-        tf_completed_process = terraform_apply(atlantis_terraform_executable, comment_args_list, planfile)
+        tf_completed_process = terraform_apply(atlantis_terraform_executable, comment_args, planfile)
 
     # run tfmask, piping the terraform_output to it
-    tfmask_completed_process = run_os_command(['tfmask'], input=tf_completed_process.stdout)
+    tfmask_completed_process = run_os_command('tfmask', input=tf_completed_process.stdout)
 
     # print masked output from tfmask
     print(tfmask_completed_process.stdout)

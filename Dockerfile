@@ -16,5 +16,3 @@ RUN chmod +x /usr/bin/tfmask
 # Install procore_terraform_wrapper.py
 COPY procore_terraform_wrapper/procore_terraform_wrapper.py /usr/bin/
 RUN chmod +x /usr/bin/procore_terraform_wrapper.py
-# JUST FOR DEBUGGING. DO NOT USE 777 IN PRODUCTION
-#RUN chmod 777 /usr/bin/procore_terraform_wrapper.py
