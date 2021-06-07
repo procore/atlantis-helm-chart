@@ -131,8 +131,7 @@ def main_cli() -> int:
     planfile = quote_argument(args.planfile)
     comment_args = ''
     if(args.comment_args):
-        comment_args = quote_argument(args.comment_args)
-        comment_args_split = comment_args.split(',')
+        comment_args_split = args.comment_args.split(',')
         comment_args = ' '.join(comment_args_split)
 
     # run the right function based on args

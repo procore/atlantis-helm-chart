@@ -4,7 +4,7 @@
 logLevel: "debug"
 
 image:
-  tag: procore-atlantis-v0.17.0-0.0.3-rc2
+  tag: procore-atlantis-v0.17.0-0.0.3-rc3
 
 repoConfig: |
  ---
