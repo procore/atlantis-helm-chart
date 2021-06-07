@@ -34,7 +34,7 @@ If the terraform commands return any errors or if the regular expressions used f
 This script is intended to be used by Atlantis. You can run it locally for testing too.
 
 ```
-usage: procore_terraform_wrapper.py [-h] --action {init,plan,apply}
+usage: procore_terraform_wrapper.py [-h] --action {init,plan,apply} [--tf-version TF_VERSION] [--planfile PLANFILE] [--comment-args COMMENT_ARGS] [--debug]
 
 Wraps calls to terraform and tfmask. For use with Atlantis.
 
@@ -42,6 +42,12 @@ optional arguments:
   -h, --help            show this help message and exit
   --action {init,plan,apply}
                         The Terraform command to perform.
+  --tf-version TF_VERSION
+                        Optional. The terraform version to use. Pass $ATLANTIS_TERRAFORM_VERSION to this.
+  --planfile PLANFILE   Optional. Path to the planfile to use. Pass $PLANFILE to this.
+  --comment-args COMMENT_ARGS
+                        Optional. Extra args for terraform command. Pass $COMMENT_ARGS to this.
+  --debug               Optional. Increase log level to debug.
 ```
 
 For Atlantis usage, we will call this script as part of a custom workflow. See the `repoConfig` setting in the `values.yaml` file for the chart in this repo.
