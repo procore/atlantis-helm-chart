@@ -213,6 +213,13 @@ spec:
             value: {{ .Values.github.hostname }}
           {{- end }}
           {{- end}}
+          {{- if .Values.terraformCloud }}
+          - name: ATLANTIS_TFE_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "atlantis.fullname" . }}-terraform-cloud
+                key: terraform_cloud_token
+          {{- end}}
           {{- if .Values.gitlab }}
           - name: ATLANTIS_GITLAB_USER
             value: {{ required "gitlab.user is required if gitlab configuration is specified." .Values.gitlab.user }}
