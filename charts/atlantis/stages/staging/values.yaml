@@ -23,6 +23,7 @@ environment:
   ATLANTIS_SILENCE_ALLOWLIST_ERRORS: true
 
 github: null
+terraformCloud: true
 
 extraVolumes:
   - name: gh-app-key-file
