@@ -214,6 +214,8 @@ spec:
           {{- end }}
           {{- end}}
           {{- if .Values.terraformCloud }}
+          - name: TERRAFORM_CLOUD
+            value:  "{{ .Values.terraformCloud }}"
           - name: ATLANTIS_TFE_TOKEN
             valueFrom:
               secretKeyRef:
