@@ -5,6 +5,7 @@ import argparse
 import re
 import sys
 import shlex
+import os
 
 # setup logging
 logger = logging.getLogger(__name__)
@@ -78,7 +79,8 @@ def terraform_plan(atlantis_terraform_executable: str, comment_args: str, planfi
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION plan -input=false -refresh -no-color -out $PLANFILE | tfmask
     logger.info('Running terraform plan...')
-    tf_completed_process = run_os_command(f'{atlantis_terraform_executable} plan -input=false -refresh -no-color -out {planfile} {comment_args}')
+    output_plan = f'-out {planfile}' if os.environ.get('TERRAFORM_CLOUD') is None else ''
+    tf_completed_process = run_os_command(f'{atlantis_terraform_executable} plan -input=false -refresh -no-color {output_plan} {comment_args}')
     # if terraform succeeded, run the reduce function to strip unnecessary output.
     if(tf_completed_process.returncode == 0):
         tf_completed_process.stdout = reduce_plan(tf_completed_process.stdout)
@@ -95,7 +97,9 @@ def terraform_apply(atlantis_terraform_executable: str, comment_args: str, planf
     """
     # terraform$ATLANTIS_TERRAFORM_VERSION apply -no-color $PLANFILE | tfmask
     logger.info('Running terraform apply...')
-    return run_os_command(f'{atlantis_terraform_executable} apply -no-color {comment_args} {planfile}')
+
+    output_apply = planfile if os.environ.get('TERRAFORM_CLOUD') is None else ''
+    return run_os_command(f'{atlantis_terraform_executable} apply -no-color {comment_args} {output_apply}')
 
 
 def quote_argument(input: str) -> str:
