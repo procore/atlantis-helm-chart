@@ -1,4 +1,4 @@
-FROM runatlantis/atlantis:v0.17.4
+FROM runatlantis/atlantis:v0.17.5
 
 # Add AWS CLI v1 to the image
 RUN apk add --no-cache \
