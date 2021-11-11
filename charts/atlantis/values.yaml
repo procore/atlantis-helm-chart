@@ -85,7 +85,7 @@ serviceAccountSecrets:
 # use the Procore custom Atlantis docker image
 image:
   repository: quay.io/procoredevops/atlantis-helm-chart
-  tag: procore-atlantis-v0.17.0-0.0.5
+  tag: procore-atlantis-v0.17.0-0.0.6
   pullPolicy: IfNotPresent
 
 ## Optionally specify an array of imagePullSecrets.
@@ -119,7 +119,7 @@ repoConfig: |
  repos:
  - id: /.*/
    workflow: workflow
-   apply_requirements: [approved]
+   apply_requirements: [approved, mergeable]
  workflows:
    workflow:
      plan:
