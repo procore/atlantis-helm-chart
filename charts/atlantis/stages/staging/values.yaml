@@ -36,3 +36,7 @@ extraVolumes:
 extraVolumeMounts:
   - mountPath: /atlantis_keys/
     name: gh-app-key-file
+
+statefulSet:
+  annotations:
+    secret.reloader.stakater.com/reload: "atlantis-terraform-cloud"
