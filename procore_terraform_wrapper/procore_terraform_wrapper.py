@@ -50,7 +50,7 @@ def reduce_plan(input: str) -> str:
         input = match.expand(r"\1 State refresh removed for brevity\n\2")
     else:
         logger.warning('Failed to match regex for terraform init replacement. Please report this to the Atlantis maintainers as a bug!')
-        input = re.sub(r"\"random_*.+?}", repl="State refresh removed to mask sensitive output\n", string=input, count=0, flags=re.MULTILINE|re.DOTALL)
+    input = re.sub(r"\"random_*.+?}", repl="State refresh removed to mask sensitive output\n", string=input, count=0, flags=re.MULTILINE|re.DOTALL)
     return input
 
 
