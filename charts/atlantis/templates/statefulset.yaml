@@ -181,7 +181,11 @@ spec:
           - name: ATLANTIS_DATA_DIR
             value: /atlantis-data
           - name: ATLANTIS_REPO_WHITELIST
+          {{- if .Values.terraformCloud.enable }}
+            value: {{ toYaml .Values.terraformCloud.orgWhitelist }}
+          {{- else }}
             value: {{ toYaml .Values.orgWhitelist }}
+          {{- end }}
           - name: ATLANTIS_PORT
             value: "4141"
           {{- if .Values.repoConfig }}
