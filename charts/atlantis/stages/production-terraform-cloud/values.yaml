@@ -17,7 +17,7 @@ environment:
   ATLANTIS_GH_APP_ID: 114426
   ATLANTIS_GH_APP_KEY_FILE: /atlantis_keys/gh_app_key_file.pem
   ATLANTIS_WRITE_GIT_CREDS: true
-  ATLANTIS_ATLANTIS_URL: http://atlantis.production.procoretech.com/
+  ATLANTIS_ATLANTIS_URL: http://atlantis-terraform-cloud.production.procoretech.com/
   ATLANTIS_SILENCE_ALLOWLIST_ERRORS: true
 
 github: null
