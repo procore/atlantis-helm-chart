@@ -217,9 +217,9 @@ spec:
             value: {{ .Values.github.hostname }}
           {{- end }}
           {{- end}}
-          {{- if .Values.terraformCloud }}
+          {{- if .Values.terraformCloud.enable }}
           - name: TERRAFORM_CLOUD
-            value:  "{{ .Values.terraformCloud }}"
+            value:  "{{ .Values.terraformCloud.enable }}"
           - name: ATLANTIS_TFE_TOKEN
             valueFrom:
               secretKeyRef:
