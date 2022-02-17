@@ -9,7 +9,7 @@ serviceAccount:
 environmentSecrets:
   - name: ATLANTIS_GH_WEBHOOK_SECRET
     secretKeyRef:
-      name: atlantis-secret
+      name: atlantis-terraform-cloud-secret
       key: github_secret
 
 environment:
