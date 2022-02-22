@@ -223,7 +223,7 @@ spec:
           - name: ATLANTIS_TFE_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ template "atlantis.fullname" . }}-terraform-cloud
+                name: atlantis-terraform-cloud
                 key: terraform_cloud_token
           {{- end}}
           {{- if .Values.gitlab }}

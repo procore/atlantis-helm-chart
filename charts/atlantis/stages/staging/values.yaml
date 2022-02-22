@@ -26,6 +26,10 @@ terraformCloud:
   enable: true
   orgWhitelist: github.com/procore/atlantis-test-repository
 
+externalSecrets:
+  terraformCloudSsm: "/apps/atlantis/application/staging/terraform_cloud_token"
+
+
 extraVolumes:
   - name: gh-app-key-file
     secret:

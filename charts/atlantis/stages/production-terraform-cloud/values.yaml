@@ -26,6 +26,10 @@ terraformCloud:
   enable: true
   orgWhitelist: github.com/procore/atlantis-test-repository
 
+
+externalSecrets:
+  terraformCloudSsm: "/apps/atlantis-terraform-cloud/us00/operations/terraform_cloud_token"
+
 nameOverride: atlantis-terraform-cloud
 
 fullnameOverride: atlantis-terraform-cloud
