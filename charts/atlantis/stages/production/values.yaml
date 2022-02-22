@@ -34,4 +34,5 @@ extraVolumeMounts:
   - mountPath: /atlantis_keys/
     name: gh-app-key-file
 
-
+terraformCloud:
+  enable: false
