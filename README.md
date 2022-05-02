@@ -1,3 +1,6 @@
+## Deprecated
+This chart is no longer maintained or in use.
+
 # atlantis-helm-chart
 
 Procore customizations to the upstream Atlantis Helm Chart repo.
